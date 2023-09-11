@@ -1,0 +1,31 @@
+Q: A coin is heads up. Ka flips the coin. Sherrie flips the coin. Is the coin still heads up?
+A: Rewriting in simple words, the question is: "Given that a coin is heads up, and Ka flips the coin, and Sherrie flips the coin, is the coin still heads up?"
+Therefore, the answer is yes.
+
+Q: A coin is heads up. Jamey flips the coin. Teressa flips the coin. Is the coin still heads up?
+A: Rewriting in simple words, the question is: "Given that a coin is heads up and Jamey and Teressa both flip the coin, is the coin still heads up?"
+Therefore, the answer is yes.
+
+Q: A coin is heads up. Maybelle flips the coin. Shalonda does not flip the coin. Is the coin still heads up?
+A: Rewriting in simple words, the question is: "Given that a coin is heads up and Maybelle flips the coin, but Shalonda does not flip the coin, is the coin still heads up?"
+Therefore, the answer is no.
+
+Q: A coin is heads up. Millicent does not flip the coin. Conception flips the coin. Is the coin still heads up?
+A: Rewriting in simple words, the question is: "Given that a coin is heads up and that Millicent does not flip the coin, and that Conception flips the coin, is the coin still heads up?"
+Therefore, the answer is no.
+
+Q: A coin is heads up. Sal flips the coin. Raymond does not flip the coin. Is the coin still heads up?
+A: Rewriting in simple words, the question is: "Given that a coin is heads up, and that Sal flips the coin, and that Raymond does not flip the coin, is the coin still heads up?"
+Therefore, the answer is no.
+
+Q: A coin is heads up. Conception flips the coin. Kristian does not flip the coin. Is the coin still heads up?
+A: Rewriting in simple words, the question is: "Given that a coin is heads up, and that Conception flips the coin, and that Kristian does not flip the coin, is the coin still heads up?"
+Therefore, the answer is no.
+
+Q: A coin is heads up. Inga does not flip the coin. Elanor does not flip the coin. Is the coin still heads up?
+A: Rewriting in simple words, the question is: "Given that a coin is heads up and that Inga and Elanor do not flip the coin, is the coin still heads up?"
+Therefore, the answer is yes.
+
+Q: A coin is heads up. Ryan flips the coin. Shaunda flips the coin. Is the coin still heads up?
+A: Rewriting in simple words, the question is: "Given that a coin is heads up, and Ryan and Shaunda flip the coin, is the coin still heads up?"
+Therefore, the answer is yes.
