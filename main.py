@@ -259,7 +259,12 @@ if __name__ == '__main__':
     parser.add_argument('--zero_shot_prompt_stage2', default="Therefore, the answer is")
     parser.add_argument('--max_tokens', type=int)
 
-    parser.add_argument('--learning_mode', type=str, default='cot', help="cot is for chain of thought and standard is in context learning")
+    parser.add_argument('--learning_mode', type=str, default='cot', choices=[
+        'standard', 'cot', 'zero_shot', 'zero_shot_cot',
+        'cot_qrepeat', 'cot_rephrase', 'cot_rephrase_v1', 'cot_rephrase_v2', 'cot_rephrase_v3',
+        'standard_qrepeat', 'standard_rephrase', 'standard_rephrase_v1', 'standard_rephrase_v2', 'standard_rephrase_v3',
+                        'least_to_most', 'least_to_most_2step', 'least_to_most_1step', 'least_to_most_original_1step'
+                        ], help="cot is for chain of thought and standard is in context learning")
 
     parser.add_argument('--api_key', type=str, help="api key to be used for the experiment")
     parser.add_argument('--api_base', type=str, help="api base url to be used for the experiment")
