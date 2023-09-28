@@ -18,14 +18,14 @@ python main.py --model-name code-davinci-002 --dataset multiarith --learning_mod
 python main.py --model-name code-davinci-002 --dataset multiarith --learning_mode zero_shot_cot --zero_shot_prompt "Let's repeat the question. \"" --max_tokens 300
 
 ## standard
-python main.py --model-name code-davinci-002 --dataset multiarith --learning_mode standard
+python main.py --model-name code-davinci-002 --dataset multiarith --learning_mode standard --max_tokens 300
 ## standard+echoprompt
-python main.py --model-name code-davinci-002 --dataset multiarith --learning_mode standard_rephrase_v1
+python main.py --model-name code-davinci-002 --dataset multiarith --learning_mode standard_rephrase_v1 --max_tokens 300
 
 ## cot
-python main.py --model-name code-davinci-002 --dataset multiarith --learning_mode cot
+python main.py --model-name code-davinci-002 --dataset multiarith --learning_mode cot --max_tokens --max_tokens 300
 ## cot+echoprompt
-python main.py --model-name code-davinci-002 --dataset multiarith --learning_mode cot_rephrase_v1
+python main.py --model-name code-davinci-002 --dataset multiarith --learning_mode cot_rephrase_v1 --max_tokens 450
 
 ```
 
