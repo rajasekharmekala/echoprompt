@@ -2,9 +2,7 @@
 [Link to Paper](https://arxiv.org/abs/2309.10687)
 
 ### Abstract
-```
 Language models are achieving impressive performance on various tasks by aggressively adopting inference-time prompting techniques, such as zero-shot and few-shot prompting. In this work, we introduce EchoPrompt, a simple yet effective approach that prompts the model to rephrase its queries before answering them. EchoPrompt is adapted for both zero-shot and few-shot in-context learning with standard and chain-of-thought prompting. Experimental results show that EchoPrompt yields substantial improvements across all these settings for four families of causal language models. These improvements are observed across various numerical reasoning (e.g. GSM8K, SVAMP), reading comprehension (e.g. DROP), and logical reasoning (e.g. Coin Flipping) tasks. On average, EchoPrompt improves the Zero-shot-CoT performance of code-davinci-002 by 5% in numerical tasks and 13% in reading comprehension tasks. We investigate the factors contributing to EchoPrompt's effectiveness through ablation studies, which reveal that both the original query and the model-generated rephrased version are instrumental in its performance gains. Our empirical results indicate that EchoPrompt is an effective technique that enhances in-context learning performance. We recommend incorporating EchoPrompt into various baseline prompting strategies to achieve performance boosts.
-```
 
 
 ### Install dependencies
