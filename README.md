@@ -1,5 +1,5 @@
 # EchoPrompt 
-[Paper] (https://arxiv.org/abs/2309.10687)
+[Link to Paper](https://arxiv.org/abs/2309.10687)
 
 ### Abstract
 ```
