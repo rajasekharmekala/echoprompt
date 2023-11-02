@@ -11,7 +11,7 @@ from statistics import mean
 
 from utils.dataset import get_questions, remove_char, is_equivalent, dates_equal
 from utils.api import  get_responses, is_chat_completion
-from utils.least_to_most import get_final_response, get_final_response_zero_shot
+from utils.least_to_most import get_final_response, get_final_response_zero_shot, get_final_response_options_later
 
 
 logger = logging.getLogger(__name__)
@@ -69,6 +69,9 @@ def run_queries(args, api_keys, api_base, templated_questions, number_of_samples
             responses = get_final_response_zero_shot(args.learning_mode == 'zero_shot_cot' or args.learning_mode == 'zero_shot_cot_augment', "\"" in args.zero_shot_prompt,  data_batch, f" {args.zero_shot_prompt_stage2}", api_keys, api_base, model_name, max_tokens, q_per_process, args, delay=DELAY)
         elif args.learning_mode == 'least_to_most':
             responses = get_final_response(data_batch, stage2_prompt, api_keys, api_base, model_name, max_tokens, q_per_process, args)
+        elif args.learning_mode == 'cot_options_later':
+            responses = get_final_response_options_later(data_batch, f" {args.zero_shot_prompt_stage2}", api_keys, api_base, model_name, max_tokens, q_per_process, args, delay=DELAY)
+            
         else:
             input_query = [question['question'] for question in data_batch]
             responses = get_responses(input_query, api_keys, api_base, model_name, max_tokens, q_per_process, args)
@@ -108,7 +111,7 @@ def run_queries(args, api_keys, api_base, templated_questions, number_of_samples
                     if len(final_answer) >0 and final_answer[-1] == '.':
                         final_answer = final_answer[:-1]
                     try:
-                        if args.dataset == 'aqua' or args.dataset == 'mmlu_ele' or args.dataset == 'mmlu_high' or args.dataset == 'logiqa' or args.dataset == 'race_m' or args.dataset == 'race_h':
+                        if args.dataset == 'aqua' or args.dataset == 'mathqa' or args.dataset == 'mmlu_ele' or args.dataset == 'mmlu_high' or args.dataset == 'logiqa' or args.dataset == 'race_m' or args.dataset == 'race_h':
                             s = final_answer
                             if s[s.find("(")+1:s.find(")")] == data_batch[id]['golden_answer']:
                                 logger.info("prediction: TRUE")
@@ -250,18 +253,20 @@ def run_queries(args, api_keys, api_base, templated_questions, number_of_samples
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--model-name', type=str,
-                        default="code-davinci-002", choices=[ "code-davinci-002",  "text-davinci-002", "gpt-3.5-turbo", "gpt-3.5-turbo-0301"])
+                        default="code-davinci-002", choices=[ "code-davinci-002",  "text-davinci-002", "gpt-3.5-turbo", "gpt-3.5-turbo-0301", "gpt-3.5-turbo-0613"])
     
     #add more datasets as needed
     parser.add_argument('--dataset', type=str,
-                        default="gsm8k", choices=["gsm8k", "svamp", "aqua", "multiarith", "singleop", "strategyqa", "csqa", 'squad' ])
+                        default="gsm8k", choices=["gsm8k", "svamp", "aqua", "mathqa", "mmlu_ele", "mmlu_high", "multiarith", "singleop", "strategyqa", "csqa", "squad", "drop_break" ])
     parser.add_argument('--zero_shot_prompt', default="Let's think step by step.")
     parser.add_argument('--zero_shot_prompt_stage2', default="Therefore, the answer is")
     parser.add_argument('--max_tokens', type=int)
+    parser.add_argument('--options_later', action='store_true') # no options are provided during text generation. 
 
     parser.add_argument('--learning_mode', type=str, default='cot', choices=[
         'standard', 'cot', 'zero_shot', 'zero_shot_cot',
         'cot_qrepeat', 'cot_rephrase', 'cot_rephrase_v1', 'cot_rephrase_v2', 'cot_rephrase_v3',
+        'cot_options_later',
         'standard_qrepeat', 'standard_rephrase', 'standard_rephrase_v1', 'standard_rephrase_v2', 'standard_rephrase_v3',
                         'least_to_most', 'least_to_most_2step', 'least_to_most_1step', 'least_to_most_original_1step'
                         ], help="cot is for chain of thought and standard is in context learning")
@@ -270,6 +275,7 @@ if __name__ == '__main__':
     parser.add_argument('--api_base', type=str, help="api base url to be used for the experiment")
     parser.add_argument('--version', type=str)
     parser.add_argument('--sample', action='store_true')
+    parser.add_argument('--queries', type=int, default=500)
 
     args = parser.parse_args()
 
@@ -289,6 +295,11 @@ if __name__ == '__main__':
         output_file_name_raw = output_file_name_raw.replace(".jsonl", f"_VERSION_{args.version}.jsonl")
         output_file_name_results = output_file_name_results.replace(".txt", f"_VERSION_{args.version}.txt")
         filename = filename.replace(".log", f"_version_{args.version}.log")
+        
+    if args.options_later:
+        output_file_name_raw = output_file_name_raw.replace(".jsonl", f"_options_later.jsonl")
+        output_file_name_results = output_file_name_results.replace(".txt", f"_options_later.txt")
+        filename = filename.replace(".log", f"_options_later.log")
 
     api_keys = []
     api_base = None
@@ -324,7 +335,7 @@ if __name__ == '__main__':
         random.shuffle(all_test_questions)
 
     if args.sample:
-        number_of_samples = 30
+        number_of_samples = args.queries
 
     else:
         number_of_samples = len(all_test_questions)

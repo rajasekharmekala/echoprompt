@@ -79,7 +79,7 @@ def get_open_ai_chat_response(
         ):
     try:
         # print('--------')
-        # print(api_key, api_base, model_name, max_tokens)
+        # print(input_query[0])
         # print('--------')
         if(len(input_query) == 0): return {'choices': []}
         if(len(input_query) >1): raise Exception("only 1 prompt at a time")
@@ -87,7 +87,7 @@ def get_open_ai_chat_response(
         response = openai.ChatCompletion.create(
             model=model_name,
             messages=[{"role": "user", "content": input_query[0]}],
-            temperature=temperature,
+            temperature=0,
             max_tokens=max_tokens,
             top_p=top_p,
             frequency_penalty=frequency_penalty,
@@ -95,7 +95,10 @@ def get_open_ai_chat_response(
             stop=stop,
         )
         for choice in response['choices']:
-            choice['text'] = choice['message']['content']
+            if choice['message']['content'] == '':
+                choice['text'] = " "
+            else:
+                choice['text'] = choice['message']['content']
         return response
     except openai.error.RateLimitError as err:
         print(err)
@@ -168,4 +171,4 @@ def get_responses(input_query, api_keys, api_base, model_name, max_tokens, q_per
 def is_chat_completion(args={}, model_name=None):
     if model_name is None:
         model_name = args.model_name
-    return model_name in ['gpt-3.5-turbo', 'gpt-3.5-turbo-0301']
+    return model_name in ['gpt-3.5-turbo', 'gpt-3.5-turbo-0301', "gpt-3.5-turbo-0613"]
