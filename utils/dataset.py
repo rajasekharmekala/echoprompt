@@ -116,13 +116,41 @@ def get_questions(dataset, args={}):
             all_test_questions = [json.loads(line) for line in f]
         # (a) 53 km (b) 55 km (c) 52 km (d) 60 km (e) 50 km
         def addOptions(options):
-            return "Answer Choices: " + " ".join([f"({chr(97+i)}) {value.split(')')[-1] }" for i, value in enumerate(options)])
+            return "Answer Choices: " + " ".join([f"({chr(97+i)}) { ')'.join(value.split(')')[1:] ) }" for i, value in enumerate(options)])
 
         for i, question in enumerate(all_test_questions):
-            question['question'] = question['question']+ '\n' + addOptions(question["options"])
+            question['question'] = question['question']+ '\n' + addOptions(question["options"]) if not args.options_later else question['question']
             golden_answer = question['correct'].lower()
             question['golden_answer'] = golden_answer.strip()
             question['id'] = i 
+            question["options"] = " ".join([f"({chr(97+i)}) { ')'.join(value.split(')')[1:] ) }" for i, value in enumerate(question["options"])])
+            
+    elif dataset == 'mathqa':
+        with open('./datasets/mathqa.jsonl', 'r') as f:
+            all_test_questions = [json.loads(line) for line in f]
+        # (a) 53 km (b) 55 km (c) 52 km (d) 60 km (e) 50 km
+        def format_answer_choices(input_string):
+            try:
+                parts = input_string.split(',')
+                values = []
+                for part in parts:
+                    choice, value = part.strip().split(') ')
+                    values.append(value.strip())
+                formatted_string = " ".join([f"({chr(97+i)}) {value}" for i, value in enumerate(values)])
+            except:
+                formatted_string = input_string
+            return formatted_string
+        
+        def addOptions(options):
+            return "Answer choices: "+ format_answer_choices(options)
+
+        for i, question in enumerate(all_test_questions):
+            question['question'] = question['Problem']+ '\n' + addOptions(question["options"]) if not args.options_later else question['Problem']
+            golden_answer = question['correct'].lower()
+            question['golden_answer'] = golden_answer.strip()
+            question['id'] = i 
+            question["options"] = format_answer_choices(question["options"])
+            
     elif dataset == 'mmlu_ele' or dataset == 'mmlu_high':
         with open(f'./datasets/{dataset}.jsonl', 'r') as f:
             all_test_questions = [json.loads(line) for line in f]
@@ -131,10 +159,11 @@ def get_questions(dataset, args={}):
             return "Answer Choices: " + " ".join([f"({chr(97+i)}) {value}" for i, value in enumerate(options)])
 
         for i, question in enumerate(all_test_questions):
-            question['question'] = question['question']+ '\n' + addOptions(question["choices"])
+            question['question'] = question['question']+ '\n' + addOptions(question["choices"]) if not args.options_later else question['question']
             golden_answer = f"{chr(97+question['answer'])}".lower()
             question['golden_answer'] = golden_answer.strip()
             question['id'] = i 
+            question['options'] = " ".join([f"({chr(97+i)}) {value}" for i, value in enumerate(question["choices"])])
     elif dataset == 'logiqa':
         with open('./datasets/logiqa.jsonl', 'r') as f:
             all_test_questions = [json.loads(line) for line in f]
@@ -142,7 +171,7 @@ def get_questions(dataset, args={}):
         def addOptions(options):
             return "Answer Choices: " + " ".join([f"({chr(97+i)}) {value}" for i, value in enumerate(options)])
         for i, question in enumerate(all_test_questions):
-            question['question'] = question['context']+ " "+ question["query"]+'\n' + addOptions(question["options"])
+            question['question'] = question['context']+ " "+ question["query"]+'\n' + addOptions(question["options"])if not args.options_later else question['context']+ " "+ question["query"]
             golden_answer = f"{chr(97+question['correct_option'])}".lower()
             question['golden_answer'] = golden_answer.strip()
             question['id'] = i
@@ -154,7 +183,7 @@ def get_questions(dataset, args={}):
         for i, question in enumerate(all_test_questions):
             question['original_data'] = question['question']
             question['options'] = question['original_data']['choices']
-            question['question'] = question['original_data']['stem']+ '\n' + addOptions(question["options"])
+            question['question'] = question['original_data']['stem']+ '\n' + addOptions(question["options"])if not args.options_later else question['original_data']['stem']
             golden_answer = question['answerKey'].lower()
             question['golden_answer'] = '('+golden_answer.strip()+')'
             question['id'] = i
@@ -242,6 +271,7 @@ def extract_symbols(str, no_char=True):
 
 def remove_char(input_string):
     input_string = str(input_string)
+    input_string = input_string.split('\n')[0]
     if "=" in input_string:
         input_string = input_string.split("=")[-1]
     if isinstance(input_string, str):

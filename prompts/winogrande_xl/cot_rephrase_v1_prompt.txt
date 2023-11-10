@@ -1,0 +1,15 @@
+Q: Victoria was scared of grasshoppers, while Patricia loved them, so _ chose to adopt the grasshoper. In the previous sentence, does _ refer to "Victoria" or "Patricia"?
+A: Rewriting in simple words, the question is "Given that Victoria was scared of grasshoppers, while Patricia loved them, who chose to adopt the grasshopper? In the previous sentence, does "who" refer to Victoria or Patricia?"
+Now to answer the rewritten question, the sentence states that Victoria was scared of grasshoppers, while Patricia loved them. So, it can be inferred that Patricia is the one who chose to adopt the grasshopper. Therefore, the answer is Patricia.
+
+Q: The bids were astounding at the auction, so we went for the dresser instead of the table because the _ was expensive. In the previous sentence, does _ refer to "dresser" or "table"?
+A: Rewriting in simple words, the question is "Given that the bids were astounding at the auction, we decided to go for the dresser instead of the table because the _ was expensive. In the previous sentence, does _ refer to dresser or table?"
+Now to answer the rewritten question, the sentence states that the bids were astounding at the auction, so the speaker chose to go for the dresser instead of the table because the _ was expensive. Since the speaker is referring to the table as being expensive, the answer is "table". Therefore, the answer is table.
+
+Q: The acorn that I ate for a snack chipped my tooth because the _ was hard. In the previous sentence, does _ refer to "acorn" or "tooth"?
+A: Rewriting in simple words, the question is "Given that the acorn that I ate for a snack chipped my tooth because it was hard, does the pronoun _ in the previous sentence refer to the acorn or the tooth?"
+Now to answer the rewritten question, the sentence states that the acorn that the speaker ate for a snack chipped their tooth because the _ was hard. Since the speaker is referring to the acorn as being hard, the answer is "acorn". Therefore, the answer is acorn.
+
+Q: After filing the charges and getting out of jail, Ryan stayed at Derrick's place as _ had a home. In the previous sentence, does _ refer to "Derrick" or "Ryan"?
+A: Rewriting in simple words, the question is "Given that after filing the charges and getting out of jail, Ryan stayed at Derrick's place as he had a home, does the pronoun _ in the previous sentence refer to Derrick or Ryan?"
+Now to answer the rewritten question, the sentence states that after filing the charges and getting out of jail, Ryan stayed at Derrick's place as _ had a home. Since it is stated that Ryan stayed at Derrick's place because _ had a home, the answer is "Derrick". Therefore, the answer is Derrick.
