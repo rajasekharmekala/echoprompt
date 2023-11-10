@@ -1,5 +1,5 @@
 import time
-from .api import get_responses
+from .api import get_responses, is_single_prompt_model
 from sortedcollections import OrderedSet
 
 def get_subquestions(question, answer):
@@ -82,12 +82,24 @@ def get_final_response_2step(data_batch, stage2_prompt, api_keys, api_base, mode
 
 def get_final_response_zero_shot(isCot, add_quote, data_batch, stage2_prompt, api_keys, api_base, model_name, max_tokens, q_per_process, args, delay=10):
     input_query = [question['question'] for question in data_batch]
-    responses = get_responses(input_query, api_keys, api_base, model_name, max_tokens if  isCot else 50, q_per_process, args, stop_tokens=["Q:", "Question:", "A:", "\""] if add_quote else ["Q:", "Question:", "A:"])
+    
+    stop = None
+    if 'instruct' in model_name or is_single_prompt_model(model_name=model_name):
+        stop = None
+    else:
+        stop = ["Q:", "Question:", "A:"]
+    if add_quote:
+        if stop ==None:
+            stop = ["\""]
+        else:
+            stop.append("\"")
+    responses = get_responses(input_query, api_keys, api_base, model_name, max_tokens if  isCot or 'codellama' in model_name else 20, q_per_process, args, stop_tokens=stop)
 
     if(len(responses)==0 or not isCot):
         for res in responses:
             res['finish_reason'] = "stop"
-            res['text'] = stage2_prompt + res['text']
+            if 'codellama' not in model_name:
+                res['text'] = stage2_prompt + res['text']
         return responses
     
     append  = "\"" if add_quote else ""
@@ -101,12 +113,16 @@ def get_final_response_zero_shot(isCot, add_quote, data_batch, stage2_prompt, ap
             input_query[id] = input_query[id]+ full_answer +  append + "\nThe available options are:\n"+ data_batch[id]["options"] + "\n"+  stage2_prompt
         else:
             data_batch[id]['sub_q'] = full_answer
+            # if 'codellama' in model_name:
+            #     input_query[id] = input_query[id]+ full_answer +  append + f"""</s><s>[INST] {stage2_prompt} [/INST]"""
+            # else:
             input_query[id] = input_query[id]+ full_answer +  append +  stage2_prompt
-            
+        # print('_'*20)
+        # print(input_query[id])    
             
     time.sleep(delay)
 
-    choices = get_responses(input_query, api_keys, api_base, model_name, max_tokens, q_per_process, args)
+    choices = get_responses(input_query, api_keys, api_base, model_name, 20, q_per_process, args)
     for choice in choices:
         choice['text'] = stage2_prompt + choice['text']
     return choices
@@ -119,12 +135,8 @@ def get_final_response_options_later(data_batch, stage2_prompt, api_keys, api_ba
         full_answer = answer['text'].replace("\n\n", " ")
         id = answer["index"]
         
-        if args.options_later:
-            data_batch[id]['sub_q'] = full_answer +  "\nThe available options are:\n"+ data_batch[id]["options"] + "\n"
-            input_query[id] = input_query[id]+ full_answer +  "\nThe available options are:\n"+ data_batch[id]["options"] + "\n"+  stage2_prompt
-        else:
-            data_batch[id]['sub_q'] = full_answer
-            input_query[id] = input_query[id]+ full_answer +   stage2_prompt
+        data_batch[id]['sub_q'] = full_answer +  "\nThe available options are:\n"+ data_batch[id]["options"] + "\n"
+        input_query[id] = input_query[id]+ full_answer +  "\nThe available options are:\n"+ data_batch[id]["options"] + "\n"+  stage2_prompt
             
             
     time.sleep(delay)

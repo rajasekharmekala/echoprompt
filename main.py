@@ -10,8 +10,8 @@ import math
 from statistics import mean
 
 from utils.dataset import get_questions, remove_char, is_equivalent, dates_equal
-from utils.api import  get_responses, is_chat_completion
-from utils.least_to_most import get_final_response, get_final_response_zero_shot, get_final_response_options_later
+from utils.api import  get_responses, is_single_prompt_model
+from utils.responses import get_final_response, get_final_response_zero_shot, get_final_response_options_later
 
 
 logger = logging.getLogger(__name__)
@@ -27,6 +27,15 @@ def add_prompt(question_list, prompt_instruction, question_prepend, answer_prepe
         question['golden_question'] = question['question']
         question['question'] = prompt_instruction + "\n" + \
             question_prepend + question['question'] + "\n" + answer_prepend
+        question['question'] = question['question'].strip("\n")
+    return templated_question
+
+def add_instruction_prompt(question_list, prompt_instruction, question_prepend, answer_prepend, learning_mode):
+    templated_question = copy.deepcopy(question_list)
+    for question in templated_question:
+        question['golden_question'] = question['question']
+        # question['question'] = f"""<s>[INST] <<SYS>>\n{args.zero_shot_prompt} Finally, conclude with the phrase: "{args.zero_shot_prompt_stage2}", followed by the answer.\n<</SYS>>\n{question['question']} [/INST] """
+        question['question'] = f"""<s>[INST] <<SYS>><</SYS>>\n{question['question']}\n{args.zero_shot_prompt} [/INST] """
     return templated_question
 
 def make_batch(question_list, batch_size):
@@ -42,14 +51,14 @@ def run_queries(args, api_keys, api_base, templated_questions, number_of_samples
     if 'least_to_most' in args.learning_mode:
         DELAY = 15
 
-    if(is_chat_completion(args)):
+    if(is_single_prompt_model(args)):
         DELAY = 1
 
     correct = prev_correct
     total = prev_total
     failures = []
     completed = []
-    if not is_chat_completion(args):
+    if not is_single_prompt_model(args):
         batch_size = int(initial_batch_size/(1+retry))
     else:
         batch_size = initial_batch_size
@@ -69,7 +78,7 @@ def run_queries(args, api_keys, api_base, templated_questions, number_of_samples
             responses = get_final_response_zero_shot(args.learning_mode == 'zero_shot_cot' or args.learning_mode == 'zero_shot_cot_augment', "\"" in args.zero_shot_prompt,  data_batch, f" {args.zero_shot_prompt_stage2}", api_keys, api_base, model_name, max_tokens, q_per_process, args, delay=DELAY)
         elif args.learning_mode == 'least_to_most':
             responses = get_final_response(data_batch, stage2_prompt, api_keys, api_base, model_name, max_tokens, q_per_process, args)
-        elif args.learning_mode == 'cot_options_later':
+        elif 'cot_options_later' in args.learning_mode:
             responses = get_final_response_options_later(data_batch, f" {args.zero_shot_prompt_stage2}", api_keys, api_base, model_name, max_tokens, q_per_process, args, delay=DELAY)
             
         else:
@@ -253,11 +262,22 @@ def run_queries(args, api_keys, api_base, templated_questions, number_of_samples
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--model-name', type=str,
-                        default="code-davinci-002", choices=[ "code-davinci-002",  "text-davinci-002", "gpt-3.5-turbo", "gpt-3.5-turbo-0301", "gpt-3.5-turbo-0613"])
+                        default="code-davinci-002", choices=[ 
+                                                             "code-davinci-002",  "text-davinci-002", 
+                                                             "gpt-3.5-turbo", "gpt-3.5-turbo-0301", "gpt-3.5-turbo-0613", "gpt-3.5-turbo-instruct-0914", "gpt-3.5-turbo-instruct",
+                                                             "gpt-4", 
+                                                             "codellama/CodeLlama-7b-Instruct-hf", "codellama/CodeLlama-13b-Instruct-hf", "codellama/CodeLlama-34b-Instruct-hf",
+                                                             ])
     
     #add more datasets as needed
     parser.add_argument('--dataset', type=str,
-                        default="gsm8k", choices=["gsm8k", "svamp", "aqua", "mathqa", "mmlu_ele", "mmlu_high", "multiarith", "singleop", "strategyqa", "csqa", "squad", "drop_break" ])
+                        default="gsm8k", choices=["gsm8k", "svamp", "multiarith", "singleop",  "aqua", 
+                                                  "date_understanding", "coin_flip",
+                                                  "mathqa", "mmlu_ele", "mmlu_high",  
+                                                  "squad", "drop_break", "drop_census",
+                                                  "strategyqa", "csqa", "winogrande_xl",
+                                                  "shuffled_objects",
+                                                  ])
     parser.add_argument('--zero_shot_prompt', default="Let's think step by step.")
     parser.add_argument('--zero_shot_prompt_stage2', default="Therefore, the answer is")
     parser.add_argument('--max_tokens', type=int)
@@ -266,18 +286,24 @@ if __name__ == '__main__':
     parser.add_argument('--learning_mode', type=str, default='cot', choices=[
         'standard', 'cot', 'zero_shot', 'zero_shot_cot',
         'cot_qrepeat', 'cot_rephrase', 'cot_rephrase_v1', 'cot_rephrase_v2', 'cot_rephrase_v3',
-        'cot_options_later',
+        'cot_options_later', 'cot_options_later_rephrase_v1',
         'standard_qrepeat', 'standard_rephrase', 'standard_rephrase_v1', 'standard_rephrase_v2', 'standard_rephrase_v3',
                         'least_to_most', 'least_to_most_2step', 'least_to_most_1step', 'least_to_most_original_1step'
                         ], help="cot is for chain of thought and standard is in context learning")
 
     parser.add_argument('--api_key', type=str, help="api key to be used for the experiment")
+    parser.add_argument('--orgid', type=str, default=None)
     parser.add_argument('--api_base', type=str, help="api base url to be used for the experiment")
     parser.add_argument('--version', type=str)
     parser.add_argument('--sample', action='store_true')
     parser.add_argument('--queries', type=int, default=500)
+    parser.add_argument('--psplus', action='store_true')
+    
 
     args = parser.parse_args()
+    
+    if args.psplus :
+        args.zero_shot_prompt = "Let's first understand the problem, extract relevant variables and  their corresponding numerals, and make a complete plan. Then, let's carry out the plan, calculate intermediate variables (pay attention to correct numerical calculation and commonsense), solve the problem step by step, and show the answer."
 
     ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
     SAVE_DIR = os.path.join(ROOT_DIR, 'saved_results')
@@ -286,7 +312,11 @@ if __name__ == '__main__':
     output_file_name_raw = f"MODEL_{args.model_name.replace('/', '|')}DATASET_{args.dataset}METHOD_{args.learning_mode}.jsonl"
     output_file_name_results = f"MODEL_{args.model_name.replace('/', '|')}DATASET_{args.dataset}METHOD_{args.learning_mode}.txt"
 
-    if args.learning_mode == 'zero_shot_cot':
+    if args.psplus:
+        output_file_name_raw = output_file_name_raw.replace(".jsonl", f"_ZERO_SHOT_PROMPT_psplus.jsonl")
+        output_file_name_results = output_file_name_results.replace(".txt", f"_ZERO_SHOT_PROMPT_psplus.txt")
+        filename = filename.replace(".log", f"_zero_shot_prompt_psplus.log")
+    elif args.learning_mode == 'zero_shot_cot':
         output_file_name_raw = output_file_name_raw.replace(".jsonl", f"_ZERO_SHOT_PROMPT_{args.zero_shot_prompt}.jsonl")
         output_file_name_results = output_file_name_results.replace(".txt", f"_ZERO_SHOT_PROMPT_{args.zero_shot_prompt}.txt")
         filename = filename.replace(".log", f"_zero_shot_prompt_{args.zero_shot_prompt}.log")
@@ -308,7 +338,7 @@ if __name__ == '__main__':
         with open(os.path.join(ROOT_DIR, './openai_key.txt'), 'r') as f:
             for line in f.readlines():
                 api_keys.append(line.strip())
-        if(is_chat_completion(args)):
+        if(is_single_prompt_model(args)):
             api_keys = api_keys* 20
     else:
         api_keys += args.api_key.split(',')
@@ -369,8 +399,11 @@ if __name__ == '__main__':
         answer_prompt = f"A: {args.zero_shot_prompt}"
     elif args.learning_mode=='zero_shot' or args.learning_mode=='zero_shot_augment':
         answer_prompt = f"A: {args.zero_shot_prompt_stage2}"
-    templated_questions = add_prompt(
-        all_test_questions, prompt_instruction, "Q: ", answer_prompt)
+
+    if 'codellama' in args.model_name and args.learning_mode == 'zero_shot_cot':
+        templated_questions = add_instruction_prompt(all_test_questions, prompt_instruction, "Q: ", answer_prompt, args.learning_mode)
+    else:
+        templated_questions = add_prompt(all_test_questions, prompt_instruction, "Q: ", answer_prompt)
 
     logger.info("-------------------------")
     logger.info(args)
@@ -391,7 +424,7 @@ if __name__ == '__main__':
         else:
             max_tokens = 150
 
-    if is_chat_completion(args):
+    if is_single_prompt_model(args):
         initial_batch_size = 1 * len(api_keys)
 
     print("max_tokens: ", max_tokens)
