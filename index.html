@@ -3,8 +3,10 @@
 
 <head>
   <meta charset="utf-8">
-  <meta name="description" content="A prompting approach to improve the incontext-learning performance of language models on arithmetic, logical reasoning and reading comprehension tasks.">
-  <meta name="keywords" content="In-context learning, prompting, large language models, zero-shot learning, few-shot learning">
+  <meta name="description"
+    content="A prompting approach to improve the incontext-learning performance of language models on arithmetic, logical reasoning and reading comprehension tasks.">
+  <meta name="keywords"
+    content="In-context learning, prompting, large language models, zero-shot learning, few-shot learning">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>EchoPrompt</title>
 
@@ -12,15 +14,16 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
   <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/954/954591.png">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
   <script type="module" src="https://gradio.s3-us-west-2.amazonaws.com/4.16.0/gradio.js"></script>
+  <script src="index.js"></script>
 </head>
 
 <style>
@@ -106,7 +109,7 @@
   }
 </style>
 
-<body>
+<body onload="showRandomExample()">
 
 
   <section class="hero">
@@ -114,14 +117,17 @@
       <div class="container is-max-desktop">
         <div class="columns is-centered">
           <div class="column has-text-centered">
-            <h1 class="title is-1 publication-title">EchoPrompt: Instructing the Model to Rephrase Queries for Improved In-context Learning</h1>
+            <h1 class="title is-1 publication-title">EchoPrompt: Instructing the Model to Rephrase Queries for Improved
+              In-context Learning</h1>
             <h5 class="subtitle is-5 publication-awards">NAACL 2024</h5>
             <div class="is-size-5 publication-authors">
               <span class="author-block">
-                <a href="https://rajasekharmekala.github.io/" style="color:#f68946;font-weight:normal;">Rajasekhar Mekala<sup>*</sup></a>,
+                <a href="https://rajasekharmekala.github.io/" style="color:#f68946;font-weight:normal;">Rajasekhar
+                  Mekala<sup>*</sup></a>,
               </span>
               <span class="author-block">
-                <a href="https://yasamanrazeghi.com/" style="color:#008AD7;font-weight:normal;">Yasaman Razeghi<sup>*</sup></a>,
+                <a href="https://yasamanrazeghi.com/" style="color:#008AD7;font-weight:normal;">Yasaman
+                  Razeghi<sup>*</sup></a>,
               </span>
               <span class="author-block">
                 <a href="https://sameersingh.org/" style="color:#F2A900;font-weight:normal;">Sameer Singh</a>
@@ -168,7 +174,7 @@
     </div>
   </section> -->
 
-  <section class="section"  style="background-color:#efeff081">
+  <section class="section" style="background-color:#efeff081">
     <div class="container is-max-desktop">
       <!-- Abstract. -->
       <div class="columns is-centered has-text-centered">
@@ -176,88 +182,111 @@
           <h2 class="title is-3">Abstract</h2>
           <div class="content has-text-justified">
             <p>
-              Language models are achieving impressive performance on various tasks by aggressively adopting inference-time prompting techniques, such as zero-shot and few-shot prompting. In this work, we introduce EchoPrompt, a simple yet effective approach that prompts the model to rephrase its queries before answering them. EchoPrompt is tailored for four scenarios, including standard and chain-of-thought prompting, in both zero-shot and few-shot settings. Experimental results show that EchoPrompt yields substantial improvements across all these settings for four families of causal language models. These improvements are observed across various numerical reasoning (e.g., GSM8K, SVAMP), reading comprehension (e.g., DROP), and logical reasoning (e.g., Coin flipping) tasks. On average, EchoPrompt improves the Zero-shot-CoT performance of code-davinci-002 by 5% in numerical tasks and 13% in reading comprehension tasks. Our empirical results indicate that EchoPrompt is an effective technique that enhances in-context learning performance.
-           </p>
-  
+              Language models are achieving impressive performance on various tasks by aggressively adopting
+              inference-time prompting techniques, such as zero-shot and few-shot prompting. In this work, we introduce
+              EchoPrompt, a simple yet effective approach that prompts the model to rephrase its queries before
+              answering them. EchoPrompt is tailored for four scenarios, including standard and chain-of-thought
+              prompting, in both zero-shot and few-shot settings. Experimental results show that EchoPrompt yields
+              substantial improvements across all these settings for four families of causal language models. These
+              improvements are observed across various numerical reasoning (e.g., GSM8K, SVAMP), reading comprehension
+              (e.g., DROP), and logical reasoning (e.g., Coin flipping) tasks. On average, EchoPrompt improves the
+              Zero-shot-CoT performance of code-davinci-002 by 5% in numerical tasks and 13% in reading comprehension
+              tasks. Our empirical results indicate that EchoPrompt is an effective technique that enhances in-context
+              learning performance.
+            </p>
+
           </div>
         </div>
       </div>
-        
+
     </div>
   </section>
 
 
 
-<!-- <section class="section">
-
-  <div class="columns is-centered has-text-centered">
-    <div class="column is-six-fifths">
-      <h2 class="title is-3"> Examples on Visual Instruction Following</h2>
-    </div>
-  </div>
-
+  <section class="section">
     <div class="columns is-centered has-text-centered">
       <div class="column is-six-fifths">
-         <h2 class="title is-4">Visual Reasoning on two examples from <a href="https://arxiv.org/abs/2303.08774">OpenAI GPT-4 Technical Report</a></h2>
-      </div>
-      </div>  
-
-    <div class="columns is-centered has-text-centered">
-    <div class="column is-six-fifths">
-      <img id="teaser" width="35%" src="images/cmp_ironing.png">
-      <img id="teaser" width="38%" src="images/cmp_chicken_nugget.png">
-    </div>
-    </div>  
-
-  
-
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-six-fifths">
-         <h2 class="title is-4">Optical character recognition (OCR)</a></h2>
-      </div>
-      </div>  
-
-    <div class="columns is-centered has-text-centered">
-    <div class="column is-six-fifths" style="display: flex; align-items: flex-start; justify-content: center;">
-        <img id="teaser" width="32%" src="images/ocr/llava_example_cvpr2023.png">
-        <img id="teaser" width="32%" src="images/ocr/llava_example_cvinw_logo.png">
-        <img id="teaser" width="32%" src="images/ocr/example_llava_exmaple.png">
-    </div>
-    </div>  
-
-  
-
-  
-
-
-  <div class="container mt-5">
-    <div class="form-row" style="justify-content: flex-end;">
-      <div class="form-group col-md-1">
-        <div class="col-md-2" style="width: 100%"><label>&nbsp;</label></div>
-        <div class="btn-group" role="group" aria-label="Left and Right Controller"
-          style="width: 100%;align-items: flex-end;justify-content: center;flex-direction: row;display: flex;">
-          <button type="button" class="form-control btn btn-primary" id="prev-question"><i
-              class="material-icons">keyboard_arrow_left</i></button>
-          <button type="button" class="form-control btn btn-primary" id="next-question"><i
-              class="material-icons">keyboard_arrow_right</i></button>
-
-        </div>
+        <h2 class="title is-3"><i class="fas fa-repeat"></i> EchoPrompt</h2>
       </div>
     </div>
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column is-full-width">
+          <div class="content has-text-justified">
+            <p>
+              EchoPrompt teaches language models to generate a version of the query before solving it. It has 2
+              variants, one for zero-shot learning and another for few-shot learning.
+            </p>
+            <h3>Zero-shot EchoPrompt</h3>
+            <p>
+              In regular Zero-shot chain-of-thought prompting, we use a prompt to help the model think through its steps
+              of reasoning before giving the final answer. But with Echoprompt, we ask the model to
+              reiterate the question before reasoning it. This change encourages the model to rephrase the question into its
+              own words before it starts generating the answer. The prompt we use to extract the answer stays the same
+              for both the methods. The following highlights the key differences between the two approaches.
+            </p>
 
-    <div style="display: flex; justify-content: center; align-items: center;">
-      <div class="card mb-4" style="width: 100%; display: flex; align-items: center;">
+          </div>
+          <centering>
+            <div style="text-align: center; margin-bottom: 40px;">
+              <img id="teaser" width="70%" src="static/images/zero_shot_echoprompt.jpg">
+            </div>
+          </centering>
 
-        <div class="card-body" id="selected-question" style="display: flex; height: 80vh;">
-          <div class="chat-history">
+          <div class="content has-text-justified">
+            <h3>Few-shot EchoPrompt</h3>
+            <p>
+              Similarly in few-shot learning, we teach the language model to rephrase the test query in a particular
+              structure
+              before answering the query. We do this by providing exemplars demonstrating the rephrase structure and
+              corresponding responses to example queries. The following figure shows an example of few-shot EchoPrompt
+            </p>
           </div>
 
+          <centering>
+            <div style="text-align: center;">
+              <img id="teaser" width="70%" src="static/images/few_shot_echoprompt.jpg">
+            </div>
+          </centering>
+
+
         </div>
       </div>
     </div>
+  </section>
 
-  </div>
-</section> -->
+  <section class="section">
+
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-six-fifths">
+        <h2 class="title is-3"> Examples</h2>
+      </div>
+    </div>
+
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-six-fifths">
+        <h2 class="title is-4">Mathematical Reasoning examples with Few-shot EchoPrompt from GSM8K on GPT-3.5</h2>
+      </div>
+    </div>
+    <div class="columns is-centered has-text-centered">
+      <button onclick="showRandomExample()">
+        <i class="fas fa-random"></i> Show Random Example
+      </button>
+    </div>
+    <div class="columns is-centered has-text-centered">
+      <div class="table-container">
+        <table id="myTable">
+          <!-- Table rows will be added here -->
+        </table>
+      </div>
+    </div>
+
+
+    <div class="columns is-centered has-text-centered">
+
+    </div>
+  </section>
 
   <section class="section" id="BibTeX">
     <div class="container is-max-desktop content">
@@ -274,14 +303,14 @@
   </code></pre>
     </div>
   </section>
-  
+
   <section class="section" id="Acknowledgement">
     <div class="container is-max-desktop content">
       <h2 class="title">Acknowledgement</h2>
       <p>
-        This website is adapted from <a
-        href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>, licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
-        Commons Attribution-ShareAlike 4.0 International License</a>.
+        This website is adapted from <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>, licensed under
+        a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+          Commons Attribution-ShareAlike 4.0 International License</a>.
       </p>
     </div>
   </section>

@@ -157,3 +157,29 @@ body {
 #interpolation-image-wrapper img {
   border-radius: 5px;
 }
+
+
+.table-container {
+  width: 100%; /* Make the container fill its parent's width */
+  overflow-x: auto; /* Enable horizontal scrolling if the table is too wide */
+  display: flex;
+  justify-content: center;
+}
+
+#myTable {
+  width: 40%; /* Make the table fill its container's width */
+  table-layout: fixed; /* Make the table layout fixed */
+}
+
+#myTable th, #myTable td {
+  border: 3px solid #ddd; /* Add a border to the cells */
+  padding: 8px; /* Add some padding to the cells */
+  word-wrap: break-word; /* Allow words to break and wrap onto the next line */
+  overflow-wrap: break-word; /* Allow words to break and wrap onto the next line */
+  white-space: normal; /* Allow text to wrap onto the next line */
+}
+
+
+#myTable th {
+  background-color: #f2f2f2; /* Add a background color to the headers */
+}
